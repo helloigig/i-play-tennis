@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🎾 Courts I've Played</title>
+<link rel="stylesheet" href="/style.css" />
+<style>
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 70% -10%, rgba(45,106,79,.12), transparent 55%);
+    pointer-events: none;
+  }
+
+  /* Court grid */
+  .court-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 20px;
+  }
+
+  .court-card {
+    background: var(--c); border: 1px solid var(--b);
+    border-radius: 16px; overflow: hidden;
+    transition: all .22s;
+  }
+  .court-card:hover { border-color: rgba(82,183,136,.35); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,.25); }
+
+  /* Photo area */
+  .court-photo {
+    height: 200px; position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .court-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .court-photo-ph {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  }
+  .court-photo-ph .ph-icon { font-size: 48px; opacity: .4; }
+  .court-photo-ph .ph-hint {
+    font-size: 11px; color: rgba(255,255,255,.3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Court info */
+  .court-info { padding: 18px; }
+  .court-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .court-location { font-size: 12px; color: var(--t2); margin-bottom: 12px; }
+
+  .court-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .ctag {
+    font-size: 10px; font-weight: 600; padding: 2px 8px;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: .5px;
+  }
+  .ctag-hard { background: rgba(86,163,245,.12); color: var(--blue); }
+  .ctag-clay { background: rgba(233,196,106,.12); color: var(--amber); }
+  .ctag-grass { background: var(--gbg2); color: var(--gll); }
+  .ctag-indoor { background: rgba(255,255,255,.07); color: var(--t2); }
+  .ctag-outdoor { background: rgba(255,255,255,.04); color: var(--d); }
+  .ctag-main { background: rgba(82,183,136,.15); color: var(--gll); border: 1px solid rgba(82,183,136,.3); }
+
+  .court-stars { color: var(--amber); font-size: 15px; margin-bottom: 10px; letter-spacing: 1px; }
+  .court-note { font-size: 13px; color: var(--t2); line-height: 1.7; margin-bottom: 12px; }
+  .court-date { font-size: 11px; color: var(--d); }
+
+  /* Add court placeholder */
+  .court-add {
+    border: 2px dashed rgba(255,255,255,.08);
+    border-radius: 16px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 12px; min-height: 340px;
+    background: transparent;
+  }
+  .court-add-icon { font-size: 36px; opacity: .2; }
+  .court-add-text { font-size: 13px; color: var(--d); text-align: center; line-height: 1.7; }
+  .court-add-code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--d); opacity: .6; }
+
+  /* Hero count bar */
+  .count-bar {
+    display: flex; gap: 28px; flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .count-item { text-align: center; }
+  .count-val { font-size: 28px; font-weight: 700; color: var(--gll); }
+  .count-lbl { font-size: 10px; color: var(--d); text-transform: uppercase; letter-spacing: .8px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="/">
+    <div class="nav-ball"></div>
+    <span>My Tennis</span>
+  </a>
+  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+  <div class="nav-links">
+    <a href="/monitor.html" class="nav-link">Monitor</a>
+    <a href="/courts.html" class="nav-link">Courts</a>
+    <a href="/schedule.html" class="nav-link">Schedule</a>
+    <a href="/partners.html" class="nav-link">Partners</a>
+    <a href="/gear.html" class="nav-link">Gear</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-title">📸 Courts I've Played</div>
+  <div class="page-sub">Every court tells a story. Here's where I've played — surfaces, vibes, and honest notes.</div>
+
+  <!--
+    HOW TO ADD YOUR COURTS:
+    1. Add your photos to the static/ folder (e.g. static/photos/islington.jpg)
+    2. Replace the .court-photo-ph div with: <img src="/photos/islington.jpg" alt="Islington TC">
+    3. Update the court name, location, tags, stars (★ = filled, ☆ = empty), note, and date
+    4. Duplicate the court-card block to add more courts
+    5. Update the count-bar numbers below
+  -->
+
+  <div class="count-bar">
+    <div class="count-item"><div class="count-val">1</div><div class="count-lbl">Courts Played</div></div>
+    <div class="count-item"><div class="count-val">1</div><div class="count-lbl">Cities</div></div>
+    <div class="count-item"><div class="count-val">1</div><div class="count-lbl">Indoor</div></div>
+    <div class="count-item"><div class="count-val">0</div><div class="count-lbl">Outdoor</div></div>
+  </div>
+
+  <div class="court-grid">
+
+    <!-- ── Court 1: Islington Tennis Centre ── -->
+    <div class="court-card">
+      <div class="court-photo">
+        <!-- Replace this block with your photo:
+             <img src="/photos/islington.jpg" alt="Islington Tennis Centre"> -->
+        <div class="court-photo-ph" style="background: linear-gradient(135deg, #0d2618, #1b4332, #2d6a4f);">
+          <div class="ph-icon">🎾</div>
+          <div class="ph-hint">Add photo → /photos/islington.jpg</div>
+        </div>
+      </div>
+      <div class="court-info">
+        <div class="court-name">Islington Tennis Centre</div>
+        <div class="court-location">📍 Islington, North London</div>
+        <div class="court-tags">
+          <span class="ctag ctag-hard">Hard</span>
+          <span class="ctag ctag-indoor">Indoor</span>
+          <span class="ctag ctag-main">⭐ Main Court</span>
+        </div>
+        <div class="court-stars">★★★★★</div>
+        <div class="court-note">Excellent indoor facility with well-maintained hard courts. Great lighting, solid booking system via Better, and a competitive atmosphere. My go-to venue.</div>
+        <div class="court-date">📅 Regular — actively monitoring for slots</div>
+      </div>
+    </div>
+
+    <!-- ── Court 2 placeholder ── -->
+    <div class="court-card">
+      <div class="court-photo">
+        <div class="court-photo-ph" style="background: linear-gradient(135deg, #111b11, #1a2e1a, #22381e);">
+          <div class="ph-icon">📸</div>
+          <div class="ph-hint">Add photo → /photos/court2.jpg</div>
+        </div>
+      </div>
+      <div class="court-info">
+        <div class="court-name">Your Court Name Here</div>
+        <div class="court-location">📍 Location, City</div>
+        <div class="court-tags">
+          <span class="ctag ctag-hard">Hard</span>
+          <span class="ctag ctag-outdoor">Outdoor</span>
+        </div>
+        <div class="court-stars">★★★★☆</div>
+        <div class="court-note">Add your notes here — surface quality, booking process, atmosphere, and anything that stood out.</div>
+        <div class="court-date">📅 Visited: Month Year</div>
+      </div>
+    </div>
+
+    <!-- ── Court 3 placeholder ── -->
+    <div class="court-card">
+      <div class="court-photo">
+        <div class="court-photo-ph" style="background: linear-gradient(135deg, #1a1a0e, #2a2a14, #38341c);">
+          <div class="ph-icon">📸</div>
+          <div class="ph-hint">Add photo → /photos/court3.jpg</div>
+        </div>
+      </div>
+      <div class="court-info">
+        <div class="court-name">Your Court Name Here</div>
+        <div class="court-location">📍 Location, City</div>
+        <div class="court-tags">
+          <span class="ctag ctag-clay">Clay</span>
+          <span class="ctag ctag-outdoor">Outdoor</span>
+        </div>
+        <div class="court-stars">★★★☆☆</div>
+        <div class="court-note">Add your notes here.</div>
+        <div class="court-date">📅 Visited: Month Year</div>
+      </div>
+    </div>
+
+    <!-- ── Add more courts ── -->
+    <div class="court-add">
+      <div class="court-add-icon">+</div>
+      <div class="court-add-text">
+        More courts coming soon<br/>
+        <span class="court-add-code">Edit courts.html to add yours</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  Made with ❤️ and a lot of tennis balls · <a href="/">Home</a>
+</footer>
+
+<script>
+document.querySelectorAll('.nav-link').forEach(a => {
+  if (a.getAttribute('href') === window.location.pathname) a.classList.add('active');
+});
+</script>
+</body>
+</html>

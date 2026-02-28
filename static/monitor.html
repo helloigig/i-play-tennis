@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🎾 Court Monitor</title>
+<link rel="stylesheet" href="/style.css" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+  body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse at 30% -10%,rgba(45,106,79,.1),transparent 60%); pointer-events:none; }
+
+  .app { max-width:900px; margin:0 auto; padding:20px 20px 80px; position:relative; z-index:1; }
+
+  /* Header */
+  .hdr { display:flex; align-items:center; justify-content:space-between; padding:20px 0 20px; border-bottom:1px solid var(--b); margin-bottom:24px; }
+  .brand { display:flex; align-items:center; gap:12px; }
+  .ball { width:40px; height:40px; background:radial-gradient(circle at 30% 30%,#b5e48c,var(--gll)); border-radius:50%; box-shadow:0 0 20px rgba(82,183,136,.3); }
+  .brand h1 { font-size:20px; font-weight:700; }
+  .brand-sub { font-size:12px; color:var(--d); }
+  .hdr-r { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--t2); }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--d); }
+  .dot.on { background:var(--gll); animation:blink 2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
+
+  /* Stats */
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-bottom:20px; }
+  .sc { background:var(--c); border:1px solid var(--b); border-radius:12px; padding:16px; text-align:center; }
+  .sv { font-size:28px; font-weight:700; }
+  .sv.g { color:var(--gll); } .sv.a { color:var(--amber); }
+  .sl { font-size:10px; color:var(--d); margin-top:4px; text-transform:uppercase; letter-spacing:.8px; }
+
+  /* Controls */
+  .ctrl { display:flex; gap:10px; margin-bottom:24px; flex-wrap:wrap; }
+  .btn-go { background:var(--g); color:#fff; box-shadow:0 2px 12px rgba(45,106,79,.3); }
+  .btn-go:hover { background:var(--gl); }
+  .btn-go:disabled { opacity:.4; cursor:not-allowed; }
+  .btn-stop { background:rgba(231,111,81,.1); color:var(--red); border:1px solid rgba(231,111,81,.25); }
+  .btn-sm { background:var(--c2); color:var(--t); border:1px solid var(--b2); padding:8px 16px; font-size:12px; }
+  .btn-sm:hover { background:var(--gbg); }
+  .btn-cfg { background:var(--c); color:var(--t2); border:1px solid var(--b2); }
+
+  /* Date groups */
+  .dg { margin-bottom:16px; }
+  .dh { display:flex; align-items:center; gap:10px; padding:8px 0; margin-bottom:6px; border-bottom:1px solid var(--b); }
+  .dl { font-size:15px; font-weight:600; }
+  .tag { font-size:10px; font-weight:600; padding:2px 8px; border-radius:4px; text-transform:uppercase; letter-spacing:.5px; }
+  .tag-today { background:rgba(86,163,245,.15); color:var(--blue); }
+  .tag-open { background:var(--gbg2); color:var(--gll); }
+  .tag-full { background:rgba(231,111,81,.1); color:var(--red); }
+  .dm { margin-left:auto; font-size:11px; color:var(--d); }
+
+  .sg { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:6px; }
+  .s { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--c); border:1px solid var(--b); border-radius:8px; transition:all .15s; }
+  .s.av { border-color:rgba(82,183,136,.35); background:var(--gbg); }
+  .s.av:hover { border-color:var(--gll); background:var(--gbg2); }
+  .s.na { opacity:.25; }
+  .st { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:13px; }
+  .si { font-size:11px; font-weight:500; }
+  .si.op { color:var(--gll); } .si.fl { color:var(--d); }
+  .sl2 { font-size:11px; color:var(--gll); text-decoration:none; font-weight:600; margin-left:6px; }
+  .sl2:hover { text-decoration:underline; }
+
+  .empty { text-align:center; padding:48px 20px; color:var(--d); }
+  .empty .big { font-size:40px; margin-bottom:12px; }
+
+  .cd { text-align:center; font-size:12px; color:var(--d); margin:16px 0; }
+  .cd span { color:var(--t2); font-weight:500; }
+
+  /* Config panel */
+  .cfg-overlay { position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:100; display:none; backdrop-filter:blur(4px); }
+  .cfg-overlay.show { display:flex; align-items:center; justify-content:center; }
+  .cfg-panel { background:var(--c); border:1px solid var(--b); border-radius:16px; padding:28px; width:90%; max-width:520px; max-height:85vh; overflow-y:auto; }
+  .cfg-panel h2 { font-size:18px; font-weight:700; margin-bottom:16px; }
+  .cfg-panel h3 { font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--d); margin:16px 0 8px; }
+  .cfg-fg { margin-bottom:12px; }
+  .cfg-fg label { display:block; font-size:12px; font-weight:500; color:var(--t2); margin-bottom:4px; }
+  .cfg-fg input, .cfg-fg select { width:100%; background:var(--bg2); border:1px solid var(--b2); color:var(--t); padding:10px 14px; border-radius:8px; font-size:13px; font-family:inherit; }
+  .cfg-fg input:focus, .cfg-fg select:focus { outline:none; border-color:var(--gll); }
+  .cfg-fg .note { font-size:11px; color:var(--d); margin-top:4px; }
+
+  .tgrid { display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+  .tbtn { appearance:none; background:var(--bg2); border:1px solid var(--b); color:var(--t2); padding:5px 10px; border-radius:6px; font-size:11px; font-family:'JetBrains Mono',monospace; cursor:pointer; }
+  .tbtn.on { background:var(--gbg2); border-color:var(--gll); color:var(--gll); font-weight:500; }
+  .shelp { display:flex; gap:8px; margin-bottom:6px; }
+  .shelp button { font-size:10px; color:var(--gll); cursor:pointer; text-decoration:underline; background:none; border:none; font-family:inherit; }
+
+  .cfg-actions { display:flex; gap:10px; margin-top:20px; padding-top:16px; border-top:1px solid var(--b); }
+  .cfg-actions .btn { flex:1; justify-content:center; display:flex; }
+
+  /* Log */
+  .logp { margin-top:24px; background:var(--c); border:1px solid var(--b); border-radius:12px; overflow:hidden; }
+  .logh { padding:12px 16px; border-bottom:1px solid var(--b); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--d); cursor:pointer; display:flex; justify-content:space-between; }
+  .logb { max-height:200px; overflow-y:auto; padding:12px 16px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:2; color:var(--t2); }
+  .logb::-webkit-scrollbar { width:3px; }
+  .logb::-webkit-scrollbar-thumb { background:var(--d); border-radius:2px; }
+  .lt { color:var(--d); }
+  .log-success { color:var(--gll); } .log-warning { color:var(--amber); } .log-error { color:var(--red); }
+
+  @media(max-width:600px) {
+    .app { padding:12px 12px 60px; }
+    .hdr { flex-direction:column; align-items:flex-start; gap:10px; }
+    .sg { grid-template-columns:1fr; }
+    .stats { grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="/">
+    <div class="nav-ball"></div>
+    <span>My Tennis</span>
+  </a>
+  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+  <div class="nav-links">
+    <a href="/monitor.html" class="nav-link">Monitor</a>
+    <a href="/courts.html" class="nav-link">Courts</a>
+    <a href="/schedule.html" class="nav-link">Schedule</a>
+    <a href="/partners.html" class="nav-link">Partners</a>
+    <a href="/gear.html" class="nav-link">Gear</a>
+  </div>
+</nav>
+
+<div class="app">
+  <div class="hdr">
+    <div class="brand">
+      <div class="ball"></div>
+      <div><h1>Court Monitor</h1><div class="brand-sub">Islington Tennis Centre · Indoor Courts</div></div>
+    </div>
+    <div class="hdr-r"><div class="dot" id="hDot"></div><span id="hSt">Loading...</span></div>
+  </div>
+
+  <div class="stats">
+    <div class="sc"><div class="sv g" id="xOpen">—</div><div class="sl">Open Slots</div></div>
+    <div class="sc"><div class="sv" id="xDays">—</div><div class="sl">Days Checked</div></div>
+    <div class="sc"><div class="sv a" id="xAlerts">0</div><div class="sl">Alerts Sent</div></div>
+    <div class="sc"><div class="sv" id="xChecks">0</div><div class="sl">Checks Done</div></div>
+  </div>
+
+  <div class="ctrl">
+    <button class="btn btn-go" id="bGo" onclick="doStart()">▶ Start Monitoring</button>
+    <button class="btn btn-stop btn" id="bStop" onclick="doStop()" style="display:none">■ Stop</button>
+    <button class="btn btn-sm" onclick="doCheck()">⟳ Check Now</button>
+    <button class="btn btn-cfg btn" onclick="openCfg()">⚙ Settings</button>
+  </div>
+
+  <div id="res">
+    <div class="empty"><div class="big">🎾</div><p>Click Start to begin monitoring courts.</p></div>
+  </div>
+
+  <div class="cd" id="cd"></div>
+
+  <div class="logp">
+    <div class="logh" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'">Activity Log <span>▼</span></div>
+    <div class="logb" id="lg"><div><span class="lt">--:--:--</span> Waiting to connect...</div></div>
+  </div>
+</div>
+
+<!-- Config Modal -->
+<div class="cfg-overlay" id="cfgOverlay">
+  <div class="cfg-panel">
+    <h2>⚙️ Settings</h2>
+
+    <h3>Email Alerts</h3>
+    <div class="cfg-fg">
+      <label>Your email</label>
+      <input type="email" id="cEmail" placeholder="you@gmail.com" />
+    </div>
+    <div class="cfg-fg">
+      <label>Gmail App Password</label>
+      <input type="password" id="cPass" placeholder="16-character app password" />
+      <div class="note">Create at <a href="https://myaccount.google.com/apppasswords" target="_blank" style="color:var(--gll)">myaccount.google.com/apppasswords</a></div>
+    </div>
+
+    <h3>Monitoring</h3>
+    <div class="cfg-fg">
+      <label>Check every</label>
+      <select id="cInt">
+        <option value="60">1 minute</option>
+        <option value="120">2 minutes</option>
+        <option value="180">3 minutes</option>
+        <option value="300">5 minutes</option>
+      </select>
+    </div>
+    <div class="cfg-fg">
+      <label>Days ahead</label>
+      <select id="cDays">
+        <option value="3">3 days</option>
+        <option value="5">5 days</option>
+        <option value="7">7 days</option>
+        <option value="14">14 days</option>
+      </select>
+    </div>
+
+    <h3>Preferred Times</h3>
+    <div class="shelp">
+      <button onclick="cfgTAll()">All</button>
+      <button onclick="cfgTEvn()">Evenings</button>
+      <button onclick="cfgTMrn()">Mornings</button>
+      <button onclick="cfgTClr()">Clear</button>
+    </div>
+    <div class="tgrid" id="cTimes"></div>
+    <div class="note" style="margin-top:6px">Empty = alert for all times</div>
+
+    <div class="cfg-actions">
+      <button class="btn btn-sm" onclick="closeCfg()">Cancel</button>
+      <button class="btn btn-go" onclick="saveCfg()">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TIMES = ["06:00","07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00"];
+let cfgTimes = new Set();
+let pollTimer = null;
+
+// ---- Nav highlight ----
+document.querySelectorAll('.nav-link').forEach(a => {
+  if (a.getAttribute('href') === window.location.pathname) a.classList.add('active');
+});
+
+// ---- Poll API ----
+async function poll() {
+  try {
+    const r = await fetch("/api/status");
+    const d = await r.json();
+    render(d);
+  } catch(e) {
+    document.getElementById("hSt").textContent = "Disconnected";
+    document.getElementById("hDot").className = "dot";
+  }
+}
+
+function render(d) {
+  document.getElementById("hDot").className = d.running ? "dot on" : "dot";
+  document.getElementById("hSt").textContent = d.running ? `Monitoring · ${d.total_open} open` : "Stopped";
+  document.getElementById("bGo").style.display = d.running ? "none" : "";
+  document.getElementById("bStop").style.display = d.running ? "" : "none";
+
+  document.getElementById("xOpen").textContent = d.total_open;
+  document.getElementById("xDays").textContent = d.config.days_ahead;
+  document.getElementById("xAlerts").textContent = d.alert_count;
+  document.getElementById("xChecks").textContent = d.check_count;
+
+  if (d.last_check) {
+    const t = new Date(d.last_check).toLocaleTimeString("en-GB", {hour:"2-digit",minute:"2-digit",second:"2-digit"});
+    document.getElementById("cd").innerHTML = `Last check: <span>${t}</span> · Email: <span>${d.config.email_to || "not set"}</span>`;
+  }
+
+  renderSlots(d.slots, d.config.preferred_times || []);
+  renderLog(d.activity_log || []);
+  document.title = d.running ? `🎾 ${d.total_open} open · Court Monitor` : "🎾 Court Monitor";
+}
+
+function renderSlots(slots, preferred) {
+  const el = document.getElementById("res");
+  if (!slots || !slots.length) {
+    el.innerHTML = '<div class="empty"><div class="big">🎾</div><p>No data yet. Start monitoring to scan courts.</p></div>';
+    return;
+  }
+
+  const pref = new Set(preferred);
+  const mf = s => pref.size === 0 || pref.has(s.time);
+  const byD = {}; slots.forEach(s => (byD[s.date] ??= []).push(s));
+  const today = new Date().toISOString().split("T")[0];
+
+  let h = "";
+  for (const [date, ds] of Object.entries(byD).sort()) {
+    const open = ds.filter(s => s.spaces > 0 && mf(s));
+    const td = date === today;
+    h += `<div class="dg"><div class="dh"><span class="dl">${fmtL(date)}</span>`;
+    if (td) h += '<span class="tag tag-today">Today</span>';
+    h += open.length ? `<span class="tag tag-open">${open.length} open</span>` : '<span class="tag tag-full">Full</span>';
+    h += `<span class="dm">${ds.length} slots</span></div><div class="sg">`;
+    for (const s of ds.sort((a,b) => a.time.localeCompare(b.time))) {
+      const o = s.spaces > 0, f = mf(s);
+      const cls = o && f ? "av" : "na";
+      const inf = o ? `<span class="si op">${s.spaces} space${s.spaces!==1?"s":""}</span><a class="sl2" href="${s.url}" target="_blank">Book →</a>` : '<span class="si fl">0 spaces</span>';
+      h += `<div class="s ${cls}"><span class="st">${s.time}</span><span>${inf}</span></div>`;
+    }
+    h += "</div></div>";
+  }
+  el.innerHTML = h;
+}
+
+function renderLog(entries) {
+  const el = document.getElementById("lg");
+  el.innerHTML = entries.map(e => `<div><span class="lt">${e.time}</span> <span class="log-${e.level||'info'}">${e.msg}</span></div>`).join("") || "<div><span class='lt'>--</span> No activity yet</div>";
+}
+
+function fmtL(d) {
+  return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+}
+
+async function doStart() { await fetch("/api/start",{method:"POST"}); poll(); }
+async function doStop() { await fetch("/api/stop",{method:"POST"}); poll(); }
+async function doCheck() { await fetch("/api/check",{method:"POST"}); setTimeout(poll, 2000); }
+
+async function openCfg() {
+  const r = await fetch("/api/config");
+  const c = await r.json();
+  document.getElementById("cEmail").value = c.email_to || c.email_from || "";
+  document.getElementById("cPass").value = c.email_password || "";
+  document.getElementById("cInt").value = String(c.check_interval_seconds || 120);
+  document.getElementById("cDays").value = String(c.days_ahead || 7);
+  cfgTimes = new Set(c.preferred_times || []);
+  renderCfgTimes();
+  document.getElementById("cfgOverlay").classList.add("show");
+}
+
+function closeCfg() { document.getElementById("cfgOverlay").classList.remove("show"); }
+
+function renderCfgTimes() {
+  const el = document.getElementById("cTimes");
+  el.innerHTML = "";
+  TIMES.forEach(t => {
+    const b = document.createElement("button");
+    b.className = "tbtn" + (cfgTimes.has(t) ? " on" : "");
+    b.textContent = t;
+    b.onclick = () => { cfgTimes.has(t) ? cfgTimes.delete(t) : cfgTimes.add(t); b.classList.toggle("on"); };
+    el.appendChild(b);
+  });
+}
+
+function cfgTAll() { TIMES.forEach(t=>cfgTimes.add(t)); renderCfgTimes(); }
+function cfgTEvn() { cfgTimes.clear(); ["17:00","18:00","19:00","20:00","21:00"].forEach(t=>cfgTimes.add(t)); renderCfgTimes(); }
+function cfgTMrn() { cfgTimes.clear(); ["06:00","07:00","08:00","09:00","10:00","11:00"].forEach(t=>cfgTimes.add(t)); renderCfgTimes(); }
+function cfgTClr() { cfgTimes.clear(); renderCfgTimes(); }
+
+async function saveCfg() {
+  const em = document.getElementById("cEmail").value.trim();
+  const pw = document.getElementById("cPass").value;
+  await fetch("/api/config", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      email_from: em, email_to: em,
+      email_password: pw,
+      check_interval_seconds: parseInt(document.getElementById("cInt").value),
+      days_ahead: parseInt(document.getElementById("cDays").value),
+      preferred_times: [...cfgTimes],
+    })
+  });
+  closeCfg();
+  poll();
+}
+
+poll();
+pollTimer = setInterval(poll, 5000);
+
+document.getElementById("cfgOverlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closeCfg();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "smtp_server": "smtp.gmail.com",
+  "smtp_port": 587,
+  "email_from": "you@gmail.com",
+  "email_password": "your-16-char-app-password",
+  "email_to": "you@gmail.com",
+  "days_ahead": 7,
+  "preferred_times": [],
+  "check_interval_seconds": 120,
+  "alert_on_first_run": true,
+  "headless": true,
+  "page_load_wait_seconds": 8
+}

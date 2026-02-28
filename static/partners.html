@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🎾 Find a Partner</title>
+<link rel="stylesheet" href="/style.css" />
+<style>
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 80% -10%, rgba(45,106,79,.12), transparent 55%);
+    pointer-events: none;
+  }
+
+  /* ── Player profile card ── */
+  .profile-card {
+    background: var(--c); border: 1px solid var(--b);
+    border-radius: 20px; padding: 32px;
+    display: grid; grid-template-columns: auto 1fr;
+    gap: 28px; align-items: start; margin-bottom: 36px;
+  }
+  .profile-avatar {
+    width: 100px; height: 100px;
+    background: radial-gradient(circle at 32% 30%, #c7f9cc, var(--gll));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 44px; box-shadow: 0 0 30px rgba(82,183,136,.25);
+    flex-shrink: 0;
+  }
+  .profile-name { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .profile-title { color: var(--gll); font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+  .profile-stats { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 16px; }
+  .pstat { text-align: center; min-width: 56px; }
+  .pstat-v { font-size: 20px; font-weight: 700; }
+  .pstat-l { font-size: 10px; color: var(--d); text-transform: uppercase; letter-spacing: .8px; margin-top: 2px; }
+  .profile-bio { font-size: 14px; color: var(--t2); line-height: 1.8; }
+
+  /* ── Skills ── */
+  .skills-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px; margin-bottom: 36px;
+  }
+  .skill-item { background: var(--c); border: 1px solid var(--b); border-radius: 12px; padding: 16px; }
+  .skill-lbl { font-size: 11px; color: var(--d); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px; }
+  .skill-val { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .skill-bar { height: 4px; background: var(--b2); border-radius: 2px; overflow: hidden; }
+  .skill-fill { height: 100%; background: linear-gradient(90deg, var(--g), var(--gll)); border-radius: 2px; }
+
+  /* ── Looking for ── */
+  .looking-for { background: var(--c); border: 1px solid var(--b); border-radius: 16px; padding: 24px; margin-bottom: 36px; }
+  .lf-list { display: flex; flex-direction: column; gap: 14px; }
+  .lf-item { display: flex; align-items: flex-start; gap: 14px; }
+  .lf-icon {
+    width: 36px; height: 36px; background: var(--gbg2);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .lf-text strong { display: block; font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .lf-text span { font-size: 13px; color: var(--t2); }
+
+  /* ── Contact section ── */
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 20px; align-items: start;
+  }
+  .contact-form {
+    background: var(--c); border: 1px solid var(--b);
+    border-radius: 16px; padding: 24px;
+  }
+  .contact-form h3 { font-size: 17px; font-weight: 700; margin-bottom: 20px; }
+
+  .form-msg {
+    font-size: 13px; margin-top: 12px; padding: 10px 14px;
+    border-radius: 8px; display: none;
+  }
+  .form-msg.ok { background: var(--gbg2); color: var(--gll); display: block; }
+  .form-msg.err { background: rgba(231,111,81,.1); color: var(--red); display: block; }
+
+  .social-card {
+    background: var(--c); border: 1px solid var(--b);
+    border-radius: 16px; padding: 24px;
+  }
+  .social-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
+  .social-link {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 14px; border-radius: 10px;
+    text-decoration: none; color: var(--t);
+    transition: background .15s; margin-bottom: 8px;
+    border: 1px solid var(--b);
+  }
+  .social-link:hover { background: var(--gbg); border-color: var(--b2); }
+  .social-link-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .social-link-name { font-size: 14px; font-weight: 600; }
+  .social-link-handle { font-size: 12px; color: var(--t2); }
+  .also-on {
+    margin-top: 16px; padding: 14px;
+    background: var(--gbg); border-radius: 10px;
+    font-size: 12px; color: var(--t2); line-height: 1.7;
+  }
+  .also-on strong { color: var(--gll); }
+
+  @media (max-width: 700px) {
+    .profile-card { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="/">
+    <div class="nav-ball"></div>
+    <span>My Tennis</span>
+  </a>
+  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+  <div class="nav-links">
+    <a href="/monitor.html" class="nav-link">Monitor</a>
+    <a href="/courts.html" class="nav-link">Courts</a>
+    <a href="/schedule.html" class="nav-link">Schedule</a>
+    <a href="/partners.html" class="nav-link">Partners</a>
+    <a href="/gear.html" class="nav-link">Gear</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-title">🤝 Find a Partner</div>
+  <div class="page-sub">Looking for hitting partners and match players in London. Here's a bit about my game — get in touch if it sounds like a good match.</div>
+
+  <!--
+    HOW TO PERSONALISE THIS PAGE:
+    - Update your name, NTRP level, years playing, play style in the profile card
+    - Adjust the skill bars (width %) to reflect your actual level
+    - Edit the "Looking For" criteria to match what you want
+    - Replace # in social links with your real URLs, or remove links you don't use
+    - Update "also on" text with your actual platform profiles
+  -->
+
+  <!-- ── Player Profile ── -->
+  <div class="profile-card">
+    <div class="profile-avatar">🎾</div>
+    <div>
+      <div class="profile-name">Your Name Here</div>
+      <div class="profile-title">🎾 Tennis Enthusiast · London</div>
+      <div class="profile-stats">
+        <div class="pstat"><div class="pstat-v">4.0</div><div class="pstat-l">NTRP</div></div>
+        <div class="pstat"><div class="pstat-v">3+</div><div class="pstat-l">Years</div></div>
+        <div class="pstat"><div class="pstat-v">2–3×</div><div class="pstat-l">Per Week</div></div>
+        <div class="pstat"><div class="pstat-v">N/E</div><div class="pstat-l">Style</div></div>
+      </div>
+      <div class="profile-bio">
+        I'm an intermediate player who loves competitive rallying and working on consistency.
+        Play mainly at Islington TC and prefer hard courts. Happy to do casual hit-arounds,
+        serious match play, or join a doubles group — just love being on court.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── My Game ── -->
+  <div class="section-hdr">
+    <h2>My Game</h2>
+    <span class="badge">Self-assessed</span>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-item">
+      <div class="skill-lbl">Forehand</div>
+      <div class="skill-val">Strong · Topspin</div>
+      <div class="skill-bar"><div class="skill-fill" style="width: 75%"></div></div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-lbl">Backhand</div>
+      <div class="skill-val">Solid · Two-Handed</div>
+      <div class="skill-bar"><div class="skill-fill" style="width: 65%"></div></div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-lbl">Serve</div>
+      <div class="skill-val">Consistent · Building Power</div>
+      <div class="skill-bar"><div class="skill-fill" style="width: 60%"></div></div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-lbl">Net Game</div>
+      <div class="skill-val">Developing</div>
+      <div class="skill-bar"><div class="skill-fill" style="width: 45%"></div></div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-lbl">Movement</div>
+      <div class="skill-val">Good Court Coverage</div>
+      <div class="skill-bar"><div class="skill-fill" style="width: 70%"></div></div>
+    </div>
+    <div class="skill-item">
+      <div class="skill-lbl">Mental Game</div>
+      <div class="skill-val">Competitive · Focused</div>
+      <div class="skill-bar"><div class="skill-fill" style="width: 68%"></div></div>
+    </div>
+  </div>
+
+  <!-- ── Looking For ── -->
+  <div class="section-hdr">
+    <h2>What I'm Looking For</h2>
+  </div>
+  <div class="looking-for">
+    <div class="lf-list">
+      <div class="lf-item">
+        <div class="lf-icon">🎯</div>
+        <div class="lf-text">
+          <strong>Skill Level</strong>
+          <span>NTRP 3.5–4.5 · Intermediate to strong intermediate</span>
+        </div>
+      </div>
+      <div class="lf-item">
+        <div class="lf-icon">📅</div>
+        <div class="lf-text">
+          <strong>Availability</strong>
+          <span>Weekday evenings (19:00–21:00) and weekend mornings (07:00–09:00)</span>
+        </div>
+      </div>
+      <div class="lf-item">
+        <div class="lf-icon">📍</div>
+        <div class="lf-text">
+          <strong>Location</strong>
+          <span>Islington and surrounding North / Central London</span>
+        </div>
+      </div>
+      <div class="lf-item">
+        <div class="lf-icon">🎾</div>
+        <div class="lf-text">
+          <strong>Format</strong>
+          <span>Singles sets, casual rallying, or doubles — all formats welcome</span>
+        </div>
+      </div>
+      <div class="lf-item">
+        <div class="lf-icon">😊</div>
+        <div class="lf-text">
+          <strong>Vibe</strong>
+          <span>Competitive but friendly. Here to improve and genuinely enjoy the game.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Contact ── -->
+  <div class="section-hdr">
+    <h2>Get in Touch</h2>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-form">
+      <h3>Send a Message</h3>
+      <div class="fg">
+        <label>Your Name *</label>
+        <input type="text" id="cfName" placeholder="Jane Smith" />
+      </div>
+      <div class="fg">
+        <label>Your Email *</label>
+        <input type="email" id="cfEmail" placeholder="jane@example.com" />
+      </div>
+      <div class="fg">
+        <label>Your NTRP Level</label>
+        <select id="cfSkill">
+          <option value="">Select level…</option>
+          <option value="Beginner (2.0–2.5)">Beginner (2.0–2.5)</option>
+          <option value="Intermediate (3.0–3.5)">Intermediate (3.0–3.5)</option>
+          <option value="Strong Intermediate (4.0–4.5)">Strong Intermediate (4.0–4.5)</option>
+          <option value="Advanced (5.0+)">Advanced (5.0+)</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Message *</label>
+        <textarea id="cfMsg" rows="4" placeholder="Hi! I'm looking for a partner too. I'm available on..."></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="submitContact()" id="cfBtn" style="width:100%;justify-content:center;">Send Message</button>
+      <div class="form-msg" id="formMsg"></div>
+    </div>
+
+    <div class="social-card">
+      <h3>Other Ways to Connect</h3>
+      <!-- Replace # with your actual profile URLs. Remove links you don't use. -->
+      <a class="social-link" href="#" target="_blank">
+        <div class="social-link-icon" style="background: rgba(131,58,180,.15);">📸</div>
+        <div>
+          <div class="social-link-name">Instagram</div>
+          <div class="social-link-handle">@yourusername</div>
+        </div>
+      </a>
+      <a class="social-link" href="#" target="_blank">
+        <div class="social-link-icon" style="background: rgba(37,211,102,.15);">💬</div>
+        <div>
+          <div class="social-link-name">WhatsApp</div>
+          <div class="social-link-handle">Message me directly</div>
+        </div>
+      </a>
+      <a class="social-link" href="#" target="_blank">
+        <div class="social-link-icon" style="background: rgba(10,102,194,.15);">💼</div>
+        <div>
+          <div class="social-link-name">LinkedIn</div>
+          <div class="social-link-handle">Your Name</div>
+        </div>
+      </a>
+      <div class="also-on">
+        Also on <strong>Playtomic</strong> and <strong>Tennis Booker</strong> if you'd
+        prefer to arrange a match through those platforms.
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  Made with ❤️ and a lot of tennis balls · <a href="/">Home</a>
+</footer>
+
+<script>
+document.querySelectorAll('.nav-link').forEach(a => {
+  if (a.getAttribute('href') === window.location.pathname) a.classList.add('active');
+});
+
+async function submitContact() {
+  const name    = document.getElementById('cfName').value.trim();
+  const email   = document.getElementById('cfEmail').value.trim();
+  const skill   = document.getElementById('cfSkill').value;
+  const message = document.getElementById('cfMsg').value.trim();
+  const msgEl   = document.getElementById('formMsg');
+  const btn     = document.getElementById('cfBtn');
+
+  msgEl.className = 'form-msg';
+  msgEl.textContent = '';
+
+  if (!name || !email || !message) {
+    msgEl.className = 'form-msg err';
+    msgEl.textContent = 'Please fill in your name, email, and message.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, skill, message }),
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      msgEl.className = 'form-msg ok';
+      msgEl.textContent = '✓ Message sent! I\'ll get back to you soon.';
+      document.getElementById('cfName').value = '';
+      document.getElementById('cfEmail').value = '';
+      document.getElementById('cfSkill').value = '';
+      document.getElementById('cfMsg').value = '';
+    } else {
+      msgEl.className = 'form-msg err';
+      msgEl.textContent = data.error || 'Something went wrong. Please try again.';
+    }
+  } catch {
+    msgEl.className = 'form-msg err';
+    msgEl.textContent = 'Connection error. Please try again later.';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Send Message';
+}
+</script>
+</body>
+</html>

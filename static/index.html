@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🎾 My Tennis</title>
+<link rel="stylesheet" href="/style.css" />
+<style>
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 30% -15%, rgba(45,106,79,.18), transparent 60%);
+    pointer-events: none;
+  }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 72px 24px 56px;
+    position: relative;
+  }
+  .hero-ball {
+    width: 80px; height: 80px;
+    background: radial-gradient(circle at 32% 30%, #c7f9cc, var(--gll));
+    border-radius: 50%;
+    box-shadow: 0 0 50px rgba(82,183,136,.4), 0 0 100px rgba(82,183,136,.12);
+    margin: 0 auto 28px;
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .hero h1 {
+    font-size: 52px; font-weight: 700; line-height: 1.05; margin-bottom: 16px;
+  }
+  .hero h1 .accent { color: var(--gll); }
+  .hero p {
+    font-size: 17px; color: var(--t2); max-width: 480px;
+    margin: 0 auto 36px; line-height: 1.7;
+  }
+  .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .hero-cta .btn { padding: 12px 24px; font-size: 14px; }
+
+  /* Live bar */
+  .live-bar {
+    max-width: 680px; margin: 48px auto 0;
+    padding: 24px 32px;
+    background: var(--c); border: 1px solid var(--b); border-radius: 18px;
+    display: flex; gap: 0; justify-content: space-around;
+    flex-wrap: wrap; gap: 20px;
+  }
+  .live-stat { text-align: center; min-width: 80px; }
+  .live-val {
+    font-size: 32px; font-weight: 700;
+    background: linear-gradient(135deg, var(--gll), #b5e48c);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .live-lbl { font-size: 10px; color: var(--d); text-transform: uppercase; letter-spacing: .8px; margin-top: 4px; }
+  .live-divider { width: 1px; background: var(--b); align-self: stretch; }
+  .live-badge {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--t2); margin-top: 8px; justify-content: center;
+  }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--d); }
+  .live-dot.on { background: var(--gll); animation: blink 2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* Section cards */
+  .sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 16px;
+    padding: 64px 24px 80px;
+    max-width: 1000px; margin: 0 auto;
+  }
+  .sec-card {
+    display: block; text-decoration: none;
+    background: var(--c); border: 1px solid var(--b);
+    border-radius: 18px; padding: 28px 28px 36px;
+    transition: all .22s;
+    position: relative; overflow: hidden;
+  }
+  .sec-card::after {
+    content: '→';
+    position: absolute; bottom: 24px; right: 24px;
+    color: var(--gll); font-size: 18px;
+    opacity: 0; transition: opacity .22s, transform .22s;
+    transform: translateX(-4px);
+  }
+  .sec-card:hover {
+    border-color: rgba(82,183,136,.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,.3);
+  }
+  .sec-card:hover::after { opacity: 1; transform: translateX(0); }
+  .sec-icon { font-size: 36px; margin-bottom: 18px; display: block; }
+  .sec-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--t); }
+  .sec-desc { font-size: 13px; color: var(--t2); line-height: 1.7; }
+
+  /* Monitor card highlight */
+  .sec-card.highlight {
+    border-color: rgba(82,183,136,.25);
+    background: linear-gradient(135deg, var(--c), rgba(45,106,79,.08));
+  }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 38px; }
+    .sections { padding: 40px 16px 60px; }
+    .live-bar { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="/">
+    <div class="nav-ball"></div>
+    <span>My Tennis</span>
+  </a>
+  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+  <div class="nav-links">
+    <a href="/monitor.html" class="nav-link">Monitor</a>
+    <a href="/courts.html" class="nav-link">Courts</a>
+    <a href="/schedule.html" class="nav-link">Schedule</a>
+    <a href="/partners.html" class="nav-link">Partners</a>
+    <a href="/gear.html" class="nav-link">Gear</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-ball"></div>
+  <h1>Love the<br/><span class="accent">Game.</span></h1>
+  <p>Tracking courts, chasing matches, always looking for the next game. Welcome to my tennis corner of the internet.</p>
+  <div class="hero-cta">
+    <a class="btn btn-primary" href="/monitor.html">🎾 Live Court Monitor</a>
+    <a class="btn btn-secondary" href="/partners.html">Find a Partner</a>
+  </div>
+</div>
+
+<div class="live-bar">
+  <div class="live-stat">
+    <div class="live-val" id="lOpen">—</div>
+    <div class="live-lbl">Courts Open</div>
+    <div class="live-badge"><div class="live-dot" id="lDot"></div><span id="lStatus">Loading…</span></div>
+  </div>
+  <div class="live-divider"></div>
+  <div class="live-stat">
+    <div class="live-val" id="lChecks">—</div>
+    <div class="live-lbl">Scans Done</div>
+  </div>
+  <div class="live-divider"></div>
+  <div class="live-stat">
+    <div class="live-val" id="lAlerts">—</div>
+    <div class="live-lbl">Alerts Sent</div>
+  </div>
+  <div class="live-divider"></div>
+  <div class="live-stat">
+    <div class="live-val">7</div>
+    <div class="live-lbl">Days Ahead</div>
+  </div>
+</div>
+
+<div class="sections">
+  <a class="sec-card highlight" href="/monitor.html">
+    <span class="sec-icon">🎾</span>
+    <div class="sec-title">Court Monitor</div>
+    <div class="sec-desc">Live availability tracker for Islington Tennis Centre. Auto-checks every 2 min, emails the moment a court opens up.</div>
+  </a>
+  <a class="sec-card" href="/courts.html">
+    <span class="sec-icon">📸</span>
+    <div class="sec-title">Courts I've Played</div>
+    <div class="sec-desc">A photo journal of every court and venue I've visited — surface type, vibe, and honest notes.</div>
+  </a>
+  <a class="sec-card" href="/schedule.html">
+    <span class="sec-icon">📅</span>
+    <div class="sec-title">My Schedule</div>
+    <div class="sec-desc">My regular playing times and upcoming sessions. Join if you're around — always up for a hit.</div>
+  </a>
+  <a class="sec-card" href="/partners.html">
+    <span class="sec-icon">🤝</span>
+    <div class="sec-title">Find a Partner</div>
+    <div class="sec-desc">Looking for hitting partners and doubles players around London. See my level and get in touch.</div>
+  </a>
+  <a class="sec-card" href="/gear.html">
+    <span class="sec-icon">🎒</span>
+    <div class="sec-title">Gear Wishlist</div>
+    <div class="sec-desc">Rackets, shoes, strings, and accessories I'm eyeing up. Because every player has their list.</div>
+  </a>
+</div>
+
+<footer class="footer">
+  Made with ❤️ and a lot of tennis balls ·
+  <a href="/monitor.html">Court Monitor</a>
+</footer>
+
+<script>
+document.querySelectorAll('.nav-link').forEach(a => {
+  if (a.getAttribute('href') === window.location.pathname) a.classList.add('active');
+});
+
+fetch('/api/status').then(r => r.json()).then(d => {
+  document.getElementById('lOpen').textContent = d.total_open ?? '—';
+  document.getElementById('lChecks').textContent = d.check_count ?? '0';
+  document.getElementById('lAlerts').textContent = d.alert_count ?? '0';
+  const dot = document.getElementById('lDot');
+  const st = document.getElementById('lStatus');
+  dot.className = 'live-dot' + (d.running ? ' on' : '');
+  st.textContent = d.running ? 'Live' : 'Stopped';
+}).catch(() => {
+  document.getElementById('lStatus').textContent = 'Offline';
+});
+</script>
+</body>
+</html>
