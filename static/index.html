@@ -3,111 +3,311 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>🎾 My Tennis</title>
-<link rel="stylesheet" href="/style.css" />
+<title>My Tennis</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
-  body::before {
-    content: ''; position: fixed; inset: 0;
-    background: radial-gradient(ellipse at 30% -15%, rgba(45,106,79,.18), transparent 60%);
-    pointer-events: none;
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg:       #e8e4dd;
+    --surface:  #ffffff;
+    --surface2: #f4f2ee;
+    --text:     #1a1917;
+    --text2:    #7a7772;
+    --text3:    #b5b2ac;
+    --green:    #1c5235;
+    --green2:   #2a7049;
+    --green-bg: #eaf2ed;
+    --border:   rgba(0,0,0,.07);
+    --rad:      18px;
+    --shadow:   0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.05);
   }
 
-  /* Hero */
-  .hero {
-    text-align: center;
-    padding: 72px 24px 56px;
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Nav ─── */
+  .nav {
+    height: 50px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px;
+  }
+  .nav-brand {
+    font-size: 14px; font-weight: 700; color: var(--text);
+    text-decoration: none; display: flex; align-items: center; gap: 8px;
+    letter-spacing: -.2px;
+  }
+  .nav-pip {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green); flex-shrink: 0;
+  }
+  .nav-links { display: flex; gap: 1px; }
+  .nav-link {
+    font-size: 12px; font-weight: 500; color: var(--text2);
+    text-decoration: none; padding: 5px 10px; border-radius: 7px;
+    transition: all .15s;
+  }
+  .nav-link:hover { color: var(--text); background: rgba(0,0,0,.05); }
+  .nav-link.active { color: var(--green); background: var(--green-bg); }
+
+  /* ─── Bento grid ─── */
+  .bento {
+    display: grid;
+    grid-template-columns: 2.2fr 2.2fr 1.6fr 1.6fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 0 14px 14px;
+    height: calc(100svh - 50px);
+  }
+
+  /* ─── Card base ─── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--rad);
+    box-shadow: var(--shadow);
+    overflow: hidden;
     position: relative;
   }
-  .hero-ball {
-    width: 80px; height: 80px;
-    background: radial-gradient(circle at 32% 30%, #c7f9cc, var(--gll));
-    border-radius: 50%;
-    box-shadow: 0 0 50px rgba(82,183,136,.4), 0 0 100px rgba(82,183,136,.12);
-    margin: 0 auto 28px;
-    animation: float 4s ease-in-out infinite;
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-  }
-  .hero h1 {
-    font-size: 52px; font-weight: 700; line-height: 1.05; margin-bottom: 16px;
-  }
-  .hero h1 .accent { color: var(--gll); }
-  .hero p {
-    font-size: 17px; color: var(--t2); max-width: 480px;
-    margin: 0 auto 36px; line-height: 1.7;
-  }
-  .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .hero-cta .btn { padding: 12px 24px; font-size: 14px; }
 
-  /* Live bar */
-  .live-bar {
-    max-width: 680px; margin: 48px auto 0;
-    padding: 24px 32px;
-    background: var(--c); border: 1px solid var(--b); border-radius: 18px;
-    display: flex; gap: 0; justify-content: space-around;
-    flex-wrap: wrap; gap: 20px;
+  /* ─────────────────────────────────────────
+     CARD: Court image  (col 1-2, row 1-2)
+  ───────────────────────────────────────── */
+  .card-court {
+    grid-column: 1 / 3;
+    grid-row: 1 / 3;
   }
-  .live-stat { text-align: center; min-width: 80px; }
-  .live-val {
-    font-size: 32px; font-weight: 700;
-    background: linear-gradient(135deg, var(--gll), #b5e48c);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .court-photo {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
   }
-  .live-lbl { font-size: 10px; color: var(--d); text-transform: uppercase; letter-spacing: .8px; margin-top: 4px; }
-  .live-divider { width: 1px; background: var(--b); align-self: stretch; }
-  .live-badge {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 11px; color: var(--t2); margin-top: 8px; justify-content: center;
-  }
-  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--d); }
-  .live-dot.on { background: var(--gll); animation: blink 2s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-  /* Section cards */
-  .sections {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 16px;
-    padding: 64px 24px 80px;
-    max-width: 1000px; margin: 0 auto;
-  }
-  .sec-card {
-    display: block; text-decoration: none;
-    background: var(--c); border: 1px solid var(--b);
-    border-radius: 18px; padding: 28px 28px 36px;
-    transition: all .22s;
+  /* Placeholder — replace with <img class="court-photo"> */
+  .court-ph {
+    width: 100%; height: 100%;
+    background: linear-gradient(155deg, #102b1e 0%, #1c5235 45%, #2d7a52 100%);
+    display: flex; align-items: center; justify-content: center;
     position: relative; overflow: hidden;
   }
-  .sec-card::after {
-    content: '→';
-    position: absolute; bottom: 24px; right: 24px;
-    color: var(--gll); font-size: 18px;
-    opacity: 0; transition: opacity .22s, transform .22s;
-    transform: translateX(-4px);
+  /* Subtle court lines decoration */
+  .court-lines {
+    position: absolute;
+    inset: 14%;
+    border: 1.5px solid rgba(255,255,255,.1);
+    border-radius: 3px;
   }
-  .sec-card:hover {
-    border-color: rgba(82,183,136,.4);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(0,0,0,.3);
+  .court-lines::before {
+    content: '';
+    position: absolute; top: 0; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 1.5px; background: rgba(255,255,255,.1);
   }
-  .sec-card:hover::after { opacity: 1; transform: translateX(0); }
-  .sec-icon { font-size: 36px; margin-bottom: 18px; display: block; }
-  .sec-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--t); }
-  .sec-desc { font-size: 13px; color: var(--t2); line-height: 1.7; }
+  .court-lines::after {
+    content: '';
+    position: absolute; left: 0; right: 0; top: 50%;
+    transform: translateY(-50%);
+    height: 1.5px; background: rgba(255,255,255,.1);
+  }
+  .court-ball {
+    font-size: 52px; opacity: .35; z-index: 1;
+  }
+  /* Gradient overlay + info at bottom */
+  .court-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(5,15,10,.75) 0%, transparent 100%);
+    padding: 32px 24px 22px;
+    color: #fff;
+  }
+  .court-name { font-size: 17px; font-weight: 700; margin-bottom: 2px; letter-spacing: -.2px; }
+  .court-loc  { font-size: 12px; opacity: .65; }
+  /* Live badge */
+  .live-badge {
+    position: absolute; top: 16px; left: 16px;
+    background: rgba(255,255,255,.12);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.18);
+    color: #fff; font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .live-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #4ade80; animation: blink 2s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-  /* Monitor card highlight */
-  .sec-card.highlight {
-    border-color: rgba(82,183,136,.25);
-    background: linear-gradient(135deg, var(--c), rgba(45,106,79,.08));
+  /* ─────────────────────────────────────────
+     CARD: Clock  (col 3, row 1)
+  ───────────────────────────────────────── */
+  .card-clock {
+    grid-column: 3; grid-row: 1;
+    background: var(--green);
+    color: #fff;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 16px;
+    text-align: center;
+  }
+  .clock-time {
+    font-size: 46px; font-weight: 700;
+    letter-spacing: -2px; line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .clock-secs {
+    font-size: 18px; font-weight: 400; opacity: .5;
+    letter-spacing: 0; font-variant-numeric: tabular-nums;
+  }
+  .clock-date {
+    font-size: 11px; opacity: .55; margin-top: 8px; line-height: 1.5;
+    font-weight: 400; text-transform: uppercase; letter-spacing: .6px;
   }
 
-  @media (max-width: 640px) {
-    .hero h1 { font-size: 38px; }
-    .sections { padding: 40px 16px 60px; }
-    .live-bar { padding: 20px; }
+  /* ─────────────────────────────────────────
+     CARD: Weather  (col 4, row 1)
+  ───────────────────────────────────────── */
+  .card-weather {
+    grid-column: 4; grid-row: 1;
+    padding: 18px 20px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .weather-location {
+    font-size: 10px; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: .8px;
+  }
+  .weather-main {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-top: 6px;
+  }
+  .weather-temp {
+    font-size: 52px; font-weight: 700; letter-spacing: -3px; line-height: 1;
+    color: var(--text);
+  }
+  .weather-icon { font-size: 34px; line-height: 1; padding-bottom: 4px; }
+  .weather-desc { font-size: 14px; font-weight: 500; color: var(--text); }
+  .weather-feels { font-size: 12px; color: var(--text3); margin-top: 3px; }
+
+  /* ─────────────────────────────────────────
+     CARD: Availability  (col 3-4, row 2)
+  ───────────────────────────────────────── */
+  .card-avail {
+    grid-column: 3 / 5; grid-row: 2;
+    display: flex; flex-direction: column;
+  }
+  .card-head {
+    padding: 16px 18px 10px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-label {
+    font-size: 11px; font-weight: 600; color: var(--text2);
+    text-transform: uppercase; letter-spacing: .7px;
+  }
+  .card-sub { font-size: 11px; color: var(--text3); }
+  .card-body { flex: 1; overflow-y: auto; padding: 10px 18px 14px; }
+  .card-body::-webkit-scrollbar { width: 3px; }
+  .card-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .slot {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 0; border-bottom: 1px solid var(--border);
+  }
+  .slot:last-child { border-bottom: none; }
+  .slot-time { font-size: 13px; font-weight: 600; min-width: 100px; font-variant-numeric: tabular-nums; }
+  .slot-pill {
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; flex-shrink: 0;
+  }
+  .pill-open { background: var(--green-bg); color: var(--green); }
+  .pill-full { background: var(--surface2); color: var(--text3); }
+  .slot-book { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--green); text-decoration: none; }
+  .slot-book:hover { text-decoration: underline; }
+  .empty-state { text-align: center; padding: 16px 0; color: var(--text3); font-size: 12px; }
+
+  /* ─────────────────────────────────────────
+     CARD: Schedule  (col 1-2, row 3)
+  ───────────────────────────────────────── */
+  .card-schedule {
+    grid-column: 1 / 3; grid-row: 3;
+    display: flex; flex-direction: column;
+  }
+  .sess {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+  }
+  .sess:last-child { border-bottom: none; }
+  .sess-cal {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--surface2);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .sess-cal-day  { font-size: 8px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; }
+  .sess-cal-num  { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.1; }
+  .sess-info { flex: 1; min-width: 0; }
+  .sess-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sess-meta { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .sess-tag {
+    font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; flex-shrink: 0;
+  }
+  .tag-open   { background: var(--green-bg); color: var(--green); }
+  .tag-booked { background: var(--surface2); color: var(--text3); }
+
+  /* ─────────────────────────────────────────
+     CARD: Play with me  (col 3-4, row 3)
+  ───────────────────────────────────────── */
+  .card-play {
+    grid-column: 3 / 5; grid-row: 3;
+    display: flex; flex-direction: column;
+    align-items: flex-start; justify-content: space-between;
+    padding: 22px 24px;
+    background: var(--surface2);
+    overflow: visible;
+  }
+  .play-top { width: 100%; }
+  .play-eyebrow {
+    font-size: 10px; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px;
+  }
+  .play-heading {
+    font-size: 22px; font-weight: 700; letter-spacing: -.5px;
+    line-height: 1.2; color: var(--text);
+  }
+  .play-body { font-size: 12px; color: var(--text2); margin-top: 6px; line-height: 1.6; }
+  .play-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--green); color: #fff;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    padding: 10px 20px; border-radius: 10px;
+    border: none; cursor: pointer; text-decoration: none;
+    transition: all .15s;
+  }
+  .play-btn:hover { background: var(--green2); transform: translateY(-1px); }
+  .play-deco {
+    position: absolute; bottom: -10px; right: 14px;
+    font-size: 72px; opacity: .06; pointer-events: none;
+    transform: rotate(-15deg);
+    user-select: none;
+  }
+
+  /* ─── Mobile ─── */
+  @media (max-width: 860px) {
+    html, body { overflow: auto; }
+    .bento {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto;
+      height: auto; padding-bottom: 24px;
+    }
+    .card-court    { grid-column: 1/3; height: 240px; }
+    .card-clock    { grid-column: 1; min-height: 120px; }
+    .card-weather  { grid-column: 2; min-height: 120px; }
+    .card-avail    { grid-column: 1/3; min-height: 180px; }
+    .card-schedule { grid-column: 1/3; min-height: 180px; }
+    .card-play     { grid-column: 1/3; min-height: 140px; }
+    .clock-time    { font-size: 36px; }
+    .weather-temp  { font-size: 40px; }
   }
 </style>
 </head>
@@ -115,10 +315,9 @@
 
 <nav class="nav">
   <a class="nav-brand" href="/">
-    <div class="nav-ball"></div>
-    <span>My Tennis</span>
+    <div class="nav-pip"></div>
+    My Tennis
   </a>
-  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
   <div class="nav-links">
     <a href="/monitor.html" class="nav-link">Monitor</a>
     <a href="/courts.html" class="nav-link">Courts</a>
@@ -128,88 +327,203 @@
   </div>
 </nav>
 
-<div class="hero">
-  <div class="hero-ball"></div>
-  <h1>Love the<br/><span class="accent">Game.</span></h1>
-  <p>Tracking courts, chasing matches, always looking for the next game. Welcome to my tennis corner of the internet.</p>
-  <div class="hero-cta">
-    <a class="btn btn-primary" href="/monitor.html">🎾 Live Court Monitor</a>
-    <a class="btn btn-secondary" href="/partners.html">Find a Partner</a>
-  </div>
-</div>
+<div class="bento">
 
-<div class="live-bar">
-  <div class="live-stat">
-    <div class="live-val" id="lOpen">—</div>
-    <div class="live-lbl">Courts Open</div>
-    <div class="live-badge"><div class="live-dot" id="lDot"></div><span id="lStatus">Loading…</span></div>
+  <!-- ── Court image ── -->
+  <div class="card card-court">
+    <!--
+      To use a real photo, replace the .court-ph div with:
+      <img class="court-photo" src="/photos/islington.jpg" alt="Islington Tennis Centre">
+    -->
+    <div class="court-ph">
+      <div class="court-lines"></div>
+      <div class="court-ball">🎾</div>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      Monitoring
+    </div>
+    <div class="court-overlay">
+      <div class="court-name">Islington Tennis Centre</div>
+      <div class="court-loc">📍 Islington, London · Indoor Hard Courts</div>
+    </div>
   </div>
-  <div class="live-divider"></div>
-  <div class="live-stat">
-    <div class="live-val" id="lChecks">—</div>
-    <div class="live-lbl">Scans Done</div>
-  </div>
-  <div class="live-divider"></div>
-  <div class="live-stat">
-    <div class="live-val" id="lAlerts">—</div>
-    <div class="live-lbl">Alerts Sent</div>
-  </div>
-  <div class="live-divider"></div>
-  <div class="live-stat">
-    <div class="live-val">7</div>
-    <div class="live-lbl">Days Ahead</div>
-  </div>
-</div>
 
-<div class="sections">
-  <a class="sec-card highlight" href="/monitor.html">
-    <span class="sec-icon">🎾</span>
-    <div class="sec-title">Court Monitor</div>
-    <div class="sec-desc">Live availability tracker for Islington Tennis Centre. Auto-checks every 2 min, emails the moment a court opens up.</div>
-  </a>
-  <a class="sec-card" href="/courts.html">
-    <span class="sec-icon">📸</span>
-    <div class="sec-title">Courts I've Played</div>
-    <div class="sec-desc">A photo journal of every court and venue I've visited — surface type, vibe, and honest notes.</div>
-  </a>
-  <a class="sec-card" href="/schedule.html">
-    <span class="sec-icon">📅</span>
-    <div class="sec-title">My Schedule</div>
-    <div class="sec-desc">My regular playing times and upcoming sessions. Join if you're around — always up for a hit.</div>
-  </a>
-  <a class="sec-card" href="/partners.html">
-    <span class="sec-icon">🤝</span>
-    <div class="sec-title">Find a Partner</div>
-    <div class="sec-desc">Looking for hitting partners and doubles players around London. See my level and get in touch.</div>
-  </a>
-  <a class="sec-card" href="/gear.html">
-    <span class="sec-icon">🎒</span>
-    <div class="sec-title">Gear Wishlist</div>
-    <div class="sec-desc">Rackets, shoes, strings, and accessories I'm eyeing up. Because every player has their list.</div>
-  </a>
-</div>
+  <!-- ── Clock ── -->
+  <div class="card card-clock">
+    <div class="clock-time" id="clock-h"></div>
+    <div class="clock-date" id="clock-date"></div>
+  </div>
 
-<footer class="footer">
-  Made with ❤️ and a lot of tennis balls ·
-  <a href="/monitor.html">Court Monitor</a>
-</footer>
+  <!-- ── Weather ── -->
+  <div class="card card-weather">
+    <div class="weather-location">London · Now</div>
+    <div>
+      <div class="weather-main">
+        <div class="weather-temp" id="w-temp">—</div>
+        <div class="weather-icon" id="w-icon"></div>
+      </div>
+      <div class="weather-desc" id="w-desc">Loading…</div>
+      <div class="weather-feels" id="w-feels"></div>
+    </div>
+  </div>
+
+  <!-- ── Court availability ── -->
+  <div class="card card-avail">
+    <div class="card-head">
+      <span class="card-label">Today's Courts</span>
+      <span class="card-sub" id="avail-status">—</span>
+    </div>
+    <div class="card-body" id="avail-body">
+      <div class="empty-state">Loading…</div>
+    </div>
+  </div>
+
+  <!-- ── Schedule ── -->
+  <div class="card card-schedule">
+    <div class="card-head">
+      <span class="card-label">My Schedule</span>
+      <span class="card-sub">Upcoming</span>
+    </div>
+    <div class="card-body" id="sched-body"></div>
+  </div>
+
+  <!-- ── Play with me ── -->
+  <div class="card card-play">
+    <div class="play-top">
+      <div class="play-eyebrow">London · Islington</div>
+      <div class="play-heading">Looking for a<br>hitting partner?</div>
+      <div class="play-body">Intermediate player, available evenings &amp; weekends. Singles or doubles welcome.</div>
+    </div>
+    <a class="play-btn" href="/partners.html">Play with me →</a>
+    <div class="play-deco">🎾</div>
+  </div>
+
+</div>
 
 <script>
+// ─── Nav active state ───
 document.querySelectorAll('.nav-link').forEach(a => {
   if (a.getAttribute('href') === window.location.pathname) a.classList.add('active');
 });
 
-fetch('/api/status').then(r => r.json()).then(d => {
-  document.getElementById('lOpen').textContent = d.total_open ?? '—';
-  document.getElementById('lChecks').textContent = d.check_count ?? '0';
-  document.getElementById('lAlerts').textContent = d.alert_count ?? '0';
-  const dot = document.getElementById('lDot');
-  const st = document.getElementById('lStatus');
-  dot.className = 'live-dot' + (d.running ? ' on' : '');
-  st.textContent = d.running ? 'Live' : 'Stopped';
-}).catch(() => {
-  document.getElementById('lStatus').textContent = 'Offline';
-});
+// ─── Clock ───
+function tick() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('clock-h').innerHTML =
+    `${pad(now.getHours())}:${pad(now.getMinutes())}<span class="clock-secs">:${pad(now.getSeconds())}</span>`;
+  document.getElementById('clock-date').textContent =
+    now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+tick();
+setInterval(tick, 1000);
+
+// ─── Weather — Open-Meteo (free, no API key) ───
+const WX_EMOJI = code => {
+  if (code === 0)  return '☀️';
+  if (code <= 2)   return '⛅';
+  if (code === 3)  return '☁️';
+  if (code <= 48)  return '🌫️';
+  if (code <= 55)  return '🌦️';
+  if (code <= 67)  return '🌧️';
+  if (code <= 77)  return '❄️';
+  if (code <= 82)  return '🌦️';
+  return '⛈️';
+};
+const WX_DESC = code => {
+  if (code === 0) return 'Clear sky';
+  if (code === 1) return 'Mainly clear';
+  if (code === 2) return 'Partly cloudy';
+  if (code === 3) return 'Overcast';
+  if (code <= 48) return 'Foggy';
+  if (code <= 55) return 'Drizzle';
+  if (code <= 67) return 'Rain';
+  if (code <= 77) return 'Snow';
+  if (code <= 82) return 'Showers';
+  return 'Thunderstorm';
+};
+
+fetch('https://api.open-meteo.com/v1/forecast?latitude=51.5074&longitude=-0.1278&current=temperature_2m,apparent_temperature,weather_code&timezone=Europe%2FLondon')
+  .then(r => r.json())
+  .then(d => {
+    const c = d.current;
+    document.getElementById('w-temp').textContent  = `${Math.round(c.temperature_2m)}°`;
+    document.getElementById('w-icon').textContent  = WX_EMOJI(c.weather_code);
+    document.getElementById('w-desc').textContent  = WX_DESC(c.weather_code);
+    document.getElementById('w-feels').textContent = `Feels like ${Math.round(c.apparent_temperature)}°`;
+  })
+  .catch(() => {
+    document.getElementById('w-desc').textContent = 'Unavailable';
+  });
+
+// ─── Court availability ───
+fetch('/api/status')
+  .then(r => r.json())
+  .then(d => {
+    const today = new Date().toISOString().split('T')[0];
+    const todaySlots = (d.slots || []).filter(s => s.date === today);
+    const openCount  = todaySlots.filter(s => s.spaces > 0).length;
+
+    document.getElementById('avail-status').textContent =
+      d.running
+        ? `${openCount} open today · live`
+        : 'Monitor not running';
+
+    const el = document.getElementById('avail-body');
+    if (!todaySlots.length) {
+      el.innerHTML = `<div class="empty-state">${d.running ? 'No slots found for today' : 'Start monitor on the Monitor page'}</div>`;
+      return;
+    }
+    el.innerHTML = todaySlots
+      .sort((a, b) => a.time.localeCompare(b.time))
+      .map(s => `
+        <div class="slot">
+          <span class="slot-time">${s.time} – ${s.end_time}</span>
+          <span class="slot-pill ${s.spaces > 0 ? 'pill-open' : 'pill-full'}">
+            ${s.spaces > 0 ? `${s.spaces} space${s.spaces > 1 ? 's' : ''}` : 'Full'}
+          </span>
+          ${s.spaces > 0 ? `<a class="slot-book" href="${s.url}" target="_blank">Book →</a>` : ''}
+        </div>`).join('');
+  })
+  .catch(() => {
+    document.getElementById('avail-body').innerHTML =
+      '<div class="empty-state">Could not reach monitor</div>';
+  });
+
+// ─── Schedule ───
+function nextWeekday(target) {
+  const d = new Date();
+  const diff = (target - d.getDay() + 7) % 7 || 7;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+const sessions = [
+  { dow: 2, label: 'Evening Singles',      time: '19:00 – 21:00',  venue: 'Islington TC', status: 'open'   },
+  { dow: 3, label: 'Mid-week Drill',        time: '18:00 – 20:00',  venue: 'Islington TC', status: 'booked' },
+  { dow: 6, label: 'Weekend Morning Rally', time: '07:00 – 09:00',  venue: 'Islington TC', status: 'open'   },
+  { dow: 2, label: 'Evening Singles',       time: '19:00 – 21:00',  venue: 'Islington TC', status: 'open', shift: 7 },
+];
+document.getElementById('sched-body').innerHTML = sessions.map(s => {
+  const d = nextWeekday(s.dow);
+  if (s.shift) d.setDate(d.getDate() + s.shift);
+  const dayName = d.toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase();
+  const dayNum  = d.getDate();
+  return `
+    <div class="sess">
+      <div class="sess-cal">
+        <div class="sess-cal-day">${dayName}</div>
+        <div class="sess-cal-num">${dayNum}</div>
+      </div>
+      <div class="sess-info">
+        <div class="sess-name">${s.label}</div>
+        <div class="sess-meta">${s.time} · ${s.venue}</div>
+      </div>
+      <span class="sess-tag ${s.status === 'open' ? 'tag-open' : 'tag-booked'}">
+        ${s.status === 'open' ? 'Open' : 'Booked'}
+      </span>
+    </div>`;
+}).join('');
 </script>
 </body>
 </html>
