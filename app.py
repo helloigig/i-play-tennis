@@ -94,6 +94,18 @@ def load_config():
         except Exception as e:
             log.warning(f"Config load error: {e}")
 
+    # Environment variables override config file (used for cloud deployment)
+    env_map = {
+        "EMAIL_FROM": "email_from",
+        "EMAIL_PASSWORD": "email_password",
+        "EMAIL_TO": "email_to",
+    }
+    for env_key, cfg_key in env_map.items():
+        val = os.environ.get(env_key)
+        if val:
+            config[cfg_key] = val
+            log.info(f"Config: {cfg_key} set from environment")
+
 
 def save_config():
     with open(CONFIG_PATH, "w") as f:
@@ -589,6 +601,11 @@ if __name__ == "__main__":
     load_config()
     load_state()
     save_config()  # ensure config.json exists
+
+    # Auto-start monitor on cloud deployments
+    if os.environ.get("AUTO_START", "").lower() == "true":
+        log.info("AUTO_START enabled — starting monitor automatically")
+        start_monitor()
 
     port = int(os.environ.get("PORT", 5050))
     log.info(f"🎾 Tennis Court Monitor starting on http://localhost:{port}")
